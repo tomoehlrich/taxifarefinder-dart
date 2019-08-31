@@ -8,15 +8,19 @@ part of 'tff_taxi_company.dart';
 
 TffTaxiCompanyList _$TffTaxiCompanyListFromJson(Map<String, dynamic> json) {
   return TffTaxiCompanyList(
-      json['status'] as String,
-      (json['businesses'] as List)
-          ?.map((e) => e == null
-              ? null
-              : TffTaxiCompany.fromJson(e as Map<String, dynamic>))
-          ?.toList());
+    json['status'] as String,
+    (json['businesses'] as List)
+        ?.map((e) => e == null
+            ? null
+            : TffTaxiCompany.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
 }
 
 TffTaxiCompany _$TffTaxiCompanyFromJson(Map<String, dynamic> json) {
   return TffTaxiCompany(
-      json['name'] as String, json['phone'] as String, json['type'] as String);
+    json['name'] as String,
+    json['phone'] as String,
+    json['type'] as String,
+  );
 }
