@@ -6,7 +6,7 @@ part 'tff_taxi_company.g.dart';
 class TffTaxiCompanyList {
   final String status;
 
-  final List<TffTaxiCompany> businesses;
+  final List<TffTaxiCompany>? businesses;
 
   TffTaxiCompanyList(this.status, this.businesses);
 

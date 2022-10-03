@@ -1,6 +1,5 @@
-import 'package:test/test.dart';
-
 import 'package:taxifarefinder/taxifarefinder.dart';
+import 'package:test/test.dart';
 
 import 'config.dart';
 
@@ -9,12 +8,15 @@ void main() {
 
   group('Test nearest city:', () {
     test('Missing lat, lng throws exception', () {
-      expect(() async => await taxiFareFinder.getNearestCity(null, null),
-          throwsException);
+      expect(
+        () async => taxiFareFinder.getNearestCity(null, null),
+        throwsException,
+      );
     });
 
     test('Valid lat, lng returns a valid response and City class', () async {
-      var response = await taxiFareFinder.getNearestCity(42.356261, -71.065334);
+      final response =
+          await taxiFareFinder.getNearestCity(42.356261, -71.065334);
 
       expect(response, isA<TffCity>());
     });
@@ -22,7 +24,8 @@ void main() {
     test(
         'Valid lat, lng returns a valid response and the right handle in the City class',
         () async {
-      var response = await taxiFareFinder.getNearestCity(42.356261, -71.065334);
+      final response =
+          await taxiFareFinder.getNearestCity(42.356261, -71.065334);
 
       expect(response.handle, equals('Boston'));
     });
@@ -42,36 +45,54 @@ void main() {
     test(
         'Missing originLat, originLng, destinationLat, destinationLng throws exception',
         () {
-      expect(() async => await taxiFareFinder.getFare(null, null, null, null),
-          throwsException);
+      expect(
+        () async => taxiFareFinder.getFare(null, null, null, null),
+        throwsException,
+      );
     });
 
     test('Valid parameters return a valid response and Fare class', () async {
-      var response = await taxiFareFinder.getFare(
-          42.368025, -71.022155, 42.362571, -71.055543);
+      final response = await taxiFareFinder.getFare(
+        42.368025,
+        -71.022155,
+        42.362571,
+        -71.055543,
+      );
 
       expect(response, isA<TffFare>());
     });
 
     test('The right rate_area is returned', () async {
-      var response = await taxiFareFinder.getFare(
-          42.368025, -71.022155, 42.362571, -71.055543);
+      final response = await taxiFareFinder.getFare(
+        42.368025,
+        -71.022155,
+        42.362571,
+        -71.055543,
+      );
 
       expect(response.rateArea, 'Boston, MA');
     });
 
     test('A valid total amount without tip is calculated', () async {
-      var response = await taxiFareFinder.getFare(
-          51.227151, 6.777033, 51.296082, 6.863858,
-          city: 'Dusseldorf-Germany');
-      print('${response.totalFare} ${response.totalFareWithoutTip}');
+      final response = await taxiFareFinder.getFare(
+        51.227151,
+        6.777033,
+        51.296082,
+        6.863858,
+        city: 'Dusseldorf-Germany',
+      );
+
       expect(response.totalFare, greaterThan(response.totalFareWithoutTip));
     });
 
     test('A valid currency Symbol is returned', () async {
-      var response = await taxiFareFinder.getFare(
-          51.227151, 6.777033, 51.296082, 6.863858,
-          city: 'Dusseldorf-Germany');
+      final response = await taxiFareFinder.getFare(
+        51.227151,
+        6.777033,
+        51.296082,
+        6.863858,
+        city: 'Dusseldorf-Germany',
+      );
 
       expect(response.currencySymbol, equals('EUR'));
     });
@@ -80,8 +101,12 @@ void main() {
         () async {
       try {
         await taxiFareFinder.getFare(
-            42.368025, -71.022155, 42.362571, -71.055543,
-            city: 'Dummy Entity');
+          42.368025,
+          -71.022155,
+          42.362571,
+          -71.055543,
+          city: 'Dummy Entity',
+        );
       } on TffException catch (e) {
         expect(e.code, 'UNKNOWN_ENTITY');
       }
@@ -90,34 +115,46 @@ void main() {
     test(
         'Valid parameters return a valid response and factor in light or heavy traffic',
         () async {
-      var responseLightTraffic = await taxiFareFinder.getFare(
-          42.368025, -71.022155, 42.362571, -71.055543,
-          traffic: TffTraffic.light);
+      final responseLightTraffic = await taxiFareFinder.getFare(
+        42.368025,
+        -71.022155,
+        42.362571,
+        -71.055543,
+        traffic: TffTraffic.light,
+      );
 
-      var responseHeavyTraffic = await taxiFareFinder.getFare(
-          42.368025, -71.022155, 42.362571, -71.055543,
-          traffic: TffTraffic.heavy);
+      final responseHeavyTraffic = await taxiFareFinder.getFare(
+        42.368025,
+        -71.022155,
+        42.362571,
+        -71.055543,
+        traffic: TffTraffic.heavy,
+      );
 
-      expect(responseLightTraffic.totalFare,
-          lessThanOrEqualTo(responseHeavyTraffic.totalFare));
+      expect(
+        responseLightTraffic.totalFare,
+        lessThanOrEqualTo(responseHeavyTraffic.totalFare),
+      );
     });
   });
 
   group('Test taxi companies:', () {
     test('Missing entity throws exception', () {
-      expect(() async => await taxiFareFinder.getTaxiCompanies(null),
-          throwsException);
+      expect(
+        () async => taxiFareFinder.getTaxiCompanies(null),
+        throwsException,
+      );
     });
 
     test('Valid entity returns a valid response and List<TaxiCompany>',
         () async {
-      var response = await taxiFareFinder.getTaxiCompanies('Boston');
+      final response = await taxiFareFinder.getTaxiCompanies('Boston');
 
-      expect(response, TypeMatcher<List<TffTaxiCompany>>());
+      expect(response, const TypeMatcher<List<TffTaxiCompany>>());
     });
 
     test('Non-empty businesses are returned', () async {
-      var response = await taxiFareFinder.getTaxiCompanies('Boston');
+      final response = await taxiFareFinder.getTaxiCompanies('Boston');
 
       expect(response.length, greaterThan(0));
     });

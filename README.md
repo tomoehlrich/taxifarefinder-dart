@@ -1,6 +1,7 @@
 # taxifarefinder
 
 A wrapper for the TaxiFareFinder API.
+
 Documentation of the API can be found at
 <https://www.taxifarefinder.com/api.php>.
 

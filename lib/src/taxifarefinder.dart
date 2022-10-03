@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'exceptions/tff_exception.dart';
+import 'package:taxifarefinder/src/exceptions/tff_exception.dart';
 
-import 'models/tff_city.dart';
-import 'models/tff_fare.dart';
-import 'models/tff_taxi_company.dart';
+import 'package:taxifarefinder/src/models/tff_city.dart';
+import 'package:taxifarefinder/src/models/tff_fare.dart';
+import 'package:taxifarefinder/src/models/tff_taxi_company.dart';
 
 const _apiBaseUrl = 'api.taxifarefinder.com';
 
@@ -44,7 +44,7 @@ enum TffTraffic { light, medium, heavy }
 /// https://www.taxifarefinder.com/contactus.php
 ///
 class TaxiFareFinder {
-  String _apiKey;
+  String _apiKey = '';
 
   TaxiFareFinder(String apiKey) {
     _apiKey = apiKey;
@@ -63,28 +63,29 @@ class TaxiFareFinder {
   ///     TffCity nearestCity = await tff.getNearestCity(13.736717, 100.523186);
 
   Future<TffCity> getNearestCity(
-    double lat,
-    double lng, {
+    double? lat,
+    double? lng, {
     int maxDistance = 80467,
   }) async {
     if (lat == null || lng == null) {
       throw Exception('Latitude and longitude are mandatory');
     }
 
-    var queryParameters = <String, String>{
+    final queryParameters = <String, String>{
       'key': _apiKey,
       'location': '$lat,$lng',
       'max_distance': maxDistance.toString()
     };
 
-    var uri = Uri.https(_apiBaseUrl, 'entity', queryParameters);
-    var response = await http.get(uri);
+    final uri = Uri.https(_apiBaseUrl, 'entity', queryParameters);
+
+    final response = await http.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load data from the TaxiFareFinder API');
     }
 
-    TffCity city =
+    final TffCity city =
         TffCity.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
 
     if (city.status != 'OK') {
@@ -107,23 +108,24 @@ class TaxiFareFinder {
   /// a [traffic] parameter in the form light|medium|heavy and
   /// a [maxDistance] to limit the the search radius.
   Future<TffFare> getFare(
-    double originLat,
-    double originLng,
-    double destinationLat,
-    double destinationLng, {
-    String city = '',
-    TffTraffic traffic = TffTraffic.medium,
-    int maxDistance = 80467,
+    double? originLat,
+    double? originLng,
+    double? destinationLat,
+    double? destinationLng, {
+    String? city = '',
+    TffTraffic? traffic = TffTraffic.medium,
+    int? maxDistance = 80467,
   }) async {
     if (originLat == null ||
         originLng == null ||
         destinationLat == null ||
         destinationLng == null) {
       throw Exception(
-          'Latitude and longitude for origin and destination are mandatory');
+        'Latitude and longitude for origin and destination are mandatory',
+      );
     }
 
-    var queryParameters = <String, String>{
+    final queryParameters = <String, String>{
       'key': _apiKey,
       'origin': '$originLat,$originLng',
       'destination': '$destinationLat,$destinationLng',
@@ -131,18 +133,19 @@ class TaxiFareFinder {
       'max_distance': maxDistance.toString()
     };
 
-    if (city.isNotEmpty) {
+    if (city != null && city.isNotEmpty) {
       queryParameters['entity_handle'] = city;
     }
 
-    var uri = Uri.https(_apiBaseUrl, 'fare', queryParameters);
-    var response = await http.get(uri);
+    final uri = Uri.https(_apiBaseUrl, 'fare', queryParameters);
+
+    final response = await http.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load data from the TaxiFareFinder API');
     }
 
-    TffFare trip =
+    final TffFare trip =
         TffFare.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
 
     if (trip.status != 'OK') {
@@ -159,31 +162,33 @@ class TaxiFareFinder {
   /// if the API returns an error.
   ///
   /// Expects an [city].
-  Future<List<TffTaxiCompany>> getTaxiCompanies(String city) async {
+  Future<List<TffTaxiCompany>> getTaxiCompanies(String? city) async {
     if (city == null) {
       throw Exception('A city (entity) is mandatory');
     }
 
-    var queryParameters = <String, String>{
+    final queryParameters = <String, String>{
       'key': _apiKey,
       'entity_handle': city
     };
 
-    var uri = Uri.https(_apiBaseUrl, 'businesses', queryParameters);
-    var response = await http.get(uri);
+    final uri = Uri.https(_apiBaseUrl, 'businesses', queryParameters);
+
+    final response = await http.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load data from the TaxiFareFinder API');
     }
 
-    TffTaxiCompanyList taxiCompanyList = TffTaxiCompanyList.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
+    final TffTaxiCompanyList taxiCompanyList = TffTaxiCompanyList.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
 
     if (taxiCompanyList.status != 'OK') {
       throw TffException(taxiCompanyList.status);
     }
 
-    List<TffTaxiCompany> taxiCompanies = taxiCompanyList.businesses;
+    final List<TffTaxiCompany> taxiCompanies = taxiCompanyList.businesses ?? [];
 
     return taxiCompanies;
   }

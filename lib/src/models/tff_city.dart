@@ -4,9 +4,6 @@ part 'tff_city.g.dart';
 
 @JsonSerializable(createToJson: false)
 class TffCity {
-  TffCity(this.status, this.name, this.fullName, this.handle, this.locale,
-      this.distance, this.howFound);
-
   final String status;
 
   /// The short name of the city / entity
@@ -31,6 +28,16 @@ class TffCity {
   /// Can be geocode, nearest or empty.
   @JsonKey(name: 'how_found')
   final String howFound;
+
+  TffCity(
+    this.status,
+    this.name,
+    this.fullName,
+    this.handle,
+    this.locale,
+    this.distance,
+    this.howFound,
+  );
 
   factory TffCity.fromJson(Map<String, dynamic> json) =>
       _$TffCityFromJson(json);

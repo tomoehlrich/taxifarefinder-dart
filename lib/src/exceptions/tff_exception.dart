@@ -1,5 +1,5 @@
 class TffException implements Exception {
-  String _statusCode;
+  String _statusCode = '';
 
   TffException(String statusCode) {
     _statusCode = statusCode;
